@@ -8,6 +8,8 @@ import java.util.*
 @Entity
 data class Crime(@PrimaryKey val id: UUID = UUID.randomUUID(),
                  var title: String = "",
-                 var date: String = DateFormat.getDateInstance(DateFormat.FULL, Locale.ENGLISH).format(Date()),
+                 var date: Date = Date(),
                  var isSolved: Boolean = false) {
 }
+
+// Упражнение: DateFormat.getDateInstance(DateFormat.FULL, Locale.ENGLISH).format(Date()
