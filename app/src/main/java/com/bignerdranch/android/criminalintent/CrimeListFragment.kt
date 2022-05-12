@@ -1,11 +1,14 @@
 package com.bignerdranch.android.criminalintent
 
 import android.content.Context
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -25,6 +28,8 @@ class CrimeListFragment : Fragment() {
 
     private var callbacks: Callbacks? = null
     private lateinit var crimeRecyclerView : RecyclerView
+    private lateinit var emptyConstraint: ConstraintLayout
+    private lateinit var emptyButton: Button
     private var adapter : CrimeListAdapter? = CrimeListAdapter().apply { submitList(emptyList()) }
     private val crimeListViewModel : CrimeListViewModel by lazy {
         ViewModelProviders
@@ -47,12 +52,24 @@ class CrimeListFragment : Fragment() {
         callbacks = null
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        emptyButton.setOnClickListener {
+            val crime = Crime()
+            crimeListViewModel.addCrime(crime)
+            callbacks?.onCrimeSelected(crime.id)
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_crime_list, container, false)
 
         crimeRecyclerView = view.findViewById(R.id.crime_recycler_view) as RecyclerView
+        emptyConstraint = view.findViewById(R.id.empty_constraint) as ConstraintLayout
+        emptyButton = view.findViewById(R.id.empty_button) as Button
         crimeRecyclerView.layoutManager = LinearLayoutManager(context)
         crimeRecyclerView.adapter = adapter
 
@@ -73,6 +90,7 @@ class CrimeListFragment : Fragment() {
     }
 
     private fun updateUI(crimes: List<Crime>) {
+        emptyConstraint.visibility = if (crimes.isEmpty()) View.VISIBLE else View.GONE
         adapter?.submitList(crimes)
         crimeRecyclerView.adapter = adapter
     }
@@ -103,7 +121,7 @@ class CrimeListFragment : Fragment() {
         }
     }
 
-    private inner class CrimeListAdapter//(var crimes: List<Crime>)
+    private inner class CrimeListAdapter
         : ListAdapter<Crime, CrimeHolder>(CrimeDiffCallback) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CrimeHolder {
