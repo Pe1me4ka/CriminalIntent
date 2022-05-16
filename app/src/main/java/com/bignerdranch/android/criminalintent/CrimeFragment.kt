@@ -14,9 +14,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
+import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
@@ -35,6 +33,9 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks {
     private lateinit var dateButton : Button
     private lateinit var reportButton : Button
     private lateinit var suspectButton : Button
+    private lateinit var callButton : Button
+    private lateinit var photoButton: ImageButton
+    private lateinit var photoView: ImageView
     private lateinit var solvedCheckBox: CheckBox
     private val crimeDetailViewModel: CrimeDetailViewModel by lazy {
         ViewModelProviders
@@ -58,6 +59,9 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks {
         dateButton = view.findViewById(R.id.crime_date) as Button
         reportButton = view.findViewById(R.id.crime_report) as Button
         suspectButton = view.findViewById(R.id.crime_suspect) as Button
+        callButton = view.findViewById(R.id.crime_call) as Button
+        photoButton = view.findViewById(R.id.crime_camera) as ImageButton
+        photoView = view.findViewById(R.id.crime_photo) as ImageView
         solvedCheckBox = view.findViewById(R.id.crime_solved) as CheckBox
 
         return view
@@ -135,6 +139,9 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks {
                 isEnabled = false
             }
         }
+        callButton.setOnClickListener {
+            //
+        }
     }
 
     override fun onStop() {
@@ -167,7 +174,7 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks {
                     if (it.count == 0) return
                     it.moveToFirst()
                     val suspect = it.getString(0)
-                    
+
                     crime.suspect = suspect
                     crimeDetailViewModel.saveCrime(crime)
                     suspectButton.text = suspect
