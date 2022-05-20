@@ -248,6 +248,7 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks {
             }
 
             requestCode == REQUEST_PHOTO -> {
+                fixer()
                 requireActivity()
                     .revokeUriPermission(photoUri,
                         Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
@@ -277,6 +278,13 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks {
         }
 
         return getString(R.string.crime_report, crime.title, dateString, solvedString, suspect)
+    }
+
+    private fun fixer() {
+        photoFile = crimeDetailViewModel.getPhotoFile(crime)
+        photoUri = FileProvider.getUriForFile(requireActivity(),
+            "com.bignerdranch.android.criminalintent.fileprovider",
+            photoFile)
     }
 
     companion object{
