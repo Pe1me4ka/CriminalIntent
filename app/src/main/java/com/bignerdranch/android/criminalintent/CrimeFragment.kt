@@ -26,6 +26,7 @@ import java.util.*
 private const val TAG = "CrimeFragment"
 private const val ARG_CRIME_ID = "crime_id"
 private const val DIALOG_DATE = "DialogDate"
+private const val DIALOG_PHOTO = "DialogPhoto"
 private const val DATE_FORMAT = "EEE, MMM, dd"
 
 private const val REQUEST_DATE = 0
@@ -187,6 +188,12 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks {
 
                 startActivityForResult(captureImage, REQUEST_PHOTO)
             }
+        }
+        photoView.setOnClickListener {
+            if (photoFile.exists())
+                FullPhotoFragment.newInstance(photoFile).apply {
+                    show(this@CrimeFragment.parentFragmentManager, DIALOG_PHOTO)
+                }
         }
     }
 
