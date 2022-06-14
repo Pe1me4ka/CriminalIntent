@@ -15,6 +15,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.FileProvider
@@ -48,6 +49,10 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks {
     private lateinit var photoView: ImageView
     private lateinit var solvedCheckBox: CheckBox
 
+    private lateinit var observer: ViewTreeObserver
+    private var viewWidth = 0
+    private var viewHeight = 0
+
     private val crimeDetailViewModel: CrimeDetailViewModel by lazy {
         ViewModelProviders
             .of(this)
@@ -74,6 +79,12 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks {
         photoButton = view.findViewById(R.id.crime_camera) as ImageButton
         photoView = view.findViewById(R.id.crime_photo) as ImageView
         solvedCheckBox = view.findViewById(R.id.crime_solved) as CheckBox
+
+        observer = photoView.viewTreeObserver
+        observer.addOnGlobalLayoutListener {
+            viewWidth = photoView.width
+            viewHeight = photoView.height
+        }
 
         return view
     }
@@ -195,6 +206,13 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks {
                     show(this@CrimeFragment.parentFragmentManager, DIALOG_PHOTO)
                 }
         }
+        photoView.viewTreeObserver.apply {
+            if (!isAlive) {
+                addOnGlobalLayoutListener {
+                    updatePhotoView()
+                }
+            }
+        }
     }
 
     override fun onStop() {
@@ -227,7 +245,7 @@ class CrimeFragment: Fragment(), DatePickerFragment.Callbacks {
 
     private fun updatePhotoView() {
         if (photoFile.exists()) {
-            val bitmap = getScaledBitmap(photoFile.path, requireActivity())
+            val bitmap = getScaledBitmap(photoFile.path, photoView.width, photoView.height)
             photoView.setImageBitmap(bitmap)
         } else {
             photoView.setImageDrawable(null)
